@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Dashboard — Enterprise AI Analytics Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#8a1d5f; --violet:#b32878; --purple:#d4529f; --pink:#e05aa4;
+  --navy:#2a0a1d; --ink:#2b101e; --slate:#7a5b6b; --mist:#faeef5;
+  --line:#f0d7e5; --white:#ffffff;
+  --grad:linear-gradient(100deg,var(--indigo),var(--violet) 55%,var(--purple));
+  --shadow-sm:0 2px 10px rgba(80,25,55,.06);
+  --shadow-md:0 12px 34px rgba(80,25,55,.10);
+  --shadow-lg:0 28px 70px rgba(80,25,55,.16);
+  --radius:16px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Plus Jakarta Sans',sans-serif;line-height:1.15;letter-spacing:-.02em}
+.container{max-width:1180px;margin:0 auto;padding:0 24px}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ------- badges / pills ------- */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--indigo);background:rgba(138,29,95,.08);border:1px solid rgba(138,29,95,.22);border-radius:999px;padding:6px 15px;margin-bottom:16px}
+.eyebrow svg{width:13px;height:13px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;color:var(--ink);background:#fdf1f7;border:1px solid var(--line);border-radius:999px;padding:7px 14px;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s,border-color .2s}
+.chip:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);border-color:rgba(179,40,120,.4)}
+.chip svg{width:14px;height:14px;color:var(--violet);flex:none}
+
+/* ------- app top bar ------- */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:200;height:48px;background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.topbar-left,.topbar-right{display:flex;align-items:center;gap:12px;height:100%}
+.app-logo{width:32px;height:32px;display:block;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
+.tb-item{position:relative;height:100%;display:flex;align-items:center}
+.tb-btn{display:inline-flex;align-items:center;gap:7px;background:none;border:none;color:#fff;font-family:'Inter',system-ui,sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;padding:7px 9px;border-radius:8px}
+.tb-btn:hover{background:rgba(255,255,255,.08)}
+.tb-btn svg{width:16px;height:16px}
+.tb-caret{width:11px!important;height:11px!important;transition:transform .2s}
+.tb-item.open .tb-caret{transform:rotate(180deg)}
+.tb-pill{background:#fff;color:var(--ink);border-radius:999px;padding:7px 15px}
+.tb-pill:hover{background:#f3f3f8}
+.tb-pill svg{color:var(--indigo)}
+.tb-icon-btn{display:grid;place-items:center;width:34px;height:34px;border:none;background:none;color:#fff;border-radius:50%;cursor:pointer}
+.tb-icon-btn:hover{background:rgba(255,255,255,.1)}
+.tb-icon-btn svg{width:19px;height:19px}
+.tb-avatar{position:relative;width:32px;height:32px;border-radius:50%;background:#e5e7f0;display:grid;place-items:center;color:#8b8fa8;border:2px solid rgba(255,255,255,.7)}
+.tb-avatar svg{width:17px;height:17px}
+.tb-badge{position:absolute;top:-5px;right:-5px;min-width:15px;height:15px;border-radius:999px;background:#e02424;color:#fff;font-size:.58rem;font-weight:800;display:grid;place-items:center;padding:0 3px;border:1.5px solid var(--navy)}
+.tb-menu{position:absolute;top:calc(100% + 4px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);min-width:225px;padding:6px;display:none;z-index:300}
+.tb-item.open .tb-menu{display:block}
+.tb-menu.tb-left{left:0}
+.tb-menu.tb-right{right:0}
+.tb-menu a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:.84rem;font-weight:600;color:var(--ink);text-decoration:none}
+.tb-menu a:hover{background:var(--mist)}
+.app-ic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;flex:none}
+.app-ic svg{width:14px;height:14px}
+.tb-search{display:flex;gap:8px;padding:6px 6px 10px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.tb-search select,.tb-search input{font-family:'Inter',system-ui,sans-serif;font-size:.8rem;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);outline:none;background:#fff}
+.tb-search select{flex:0 0 auto}
+.tb-search input{flex:1;min-width:0}
+@media(max-width:760px){.tb-btn .tb-label{display:none}}
+
+/* ------- nav ------- */
+nav{position:fixed;top:48px;left:0;right:0;z-index:100;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(240,215,229,.8)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Plus Jakarta Sans';font-weight:800;font-size:1.12rem;color:var(--ink);text-decoration:none}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:#fff;border:1px solid var(--line);display:grid;place-items:center}
+.brand-mark svg,.brand-mark img{width:22px;height:19px;display:block}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-size:.9rem;font-weight:600;color:var(--slate);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--indigo)}
+@media(max-width:760px){.nav-links{display:none}}
+
+/* ------- buttons ------- */
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:'Plus Jakarta Sans';font-weight:700;font-size:.94rem;padding:14px 26px;border-radius:12px;text-decoration:none;transition:transform .2s,box-shadow .2s;cursor:pointer}
+.btn svg{width:15px;height:15px}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 10px 26px rgba(179,40,120,.35)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(179,40,120,.45)}
+
+/* ------- hero ------- */
+.hero{position:relative;padding:152px 0 58px;background:
+  radial-gradient(900px 500px at 8% -10%,rgba(179,40,120,.10),transparent 60%),
+  radial-gradient(800px 480px at 100% 6%,rgba(224,90,164,.08),transparent 55%),
+  linear-gradient(180deg,#fef6fa, #ffffff)}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(179,40,120,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(179,40,120,.05) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(700px 460px at 60% 20%,#000 30%,transparent 75%);pointer-events:none}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:44px}}
+.hero h1{font-size:clamp(2.6rem,5.4vw,4rem);font-weight:800;margin-bottom:18px}
+.hero-sub{font-size:1.1rem;color:var(--slate);max-width:520px;margin-bottom:24px}
+.hero-chips{display:flex;flex-wrap:wrap;gap:10px;max-width:540px}
+
+/* ------- hero dashboard frame ------- */
+.dash-frame{position:relative;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow-lg);padding:14px 14px 12px;overflow:hidden;transform:rotate(.4deg)}
+@media(max-width:980px){.dash-frame{transform:none}}
+.dash-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dash-dots{display:flex;gap:6px}
+.dash-dots i{width:9px;height:9px;border-radius:50%;display:block}
+.dash-dots i:nth-child(1){background:#fda4af}.dash-dots i:nth-child(2){background:#fcd34d}.dash-dots i:nth-child(3){background:#86efac}
+.dash-title{font-size:.66rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--slate)}
+.sample-tag{font-size:.6rem;font-weight:800;letter-spacing:.12em;color:var(--violet);background:rgba(179,40,120,.1);border:1px solid rgba(179,40,120,.25);border-radius:999px;padding:3px 10px}
+.dash-img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--line)}
+
+/* ------- sections ------- */
+section{padding:52px 0}
+.section-head h2{font-size:clamp(1.7rem,3.1vw,2.3rem);font-weight:800;margin-bottom:14px}
+.section-head p{color:var(--slate);font-size:1rem}
+
+/* ------- about ------- */
+.about{background:var(--mist)}
+.about-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:48px;align-items:start}
+@media(max-width:980px){.about-grid{grid-template-columns:1fr;gap:36px}}
+.about-stats{display:flex;gap:40px;margin-top:26px;flex-wrap:wrap}
+.about-stats .stat b{display:block;font-family:'Plus Jakarta Sans';font-size:1.8rem;font-weight:800;color:var(--violet)}
+.about-stats .stat span{font-size:.8rem;font-weight:600;color:var(--slate)}
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.cap-grid{grid-template-columns:1fr}}
+.cap{background:#fdf1f7;border:1px solid var(--line);border-radius:var(--radius);padding:15px 16px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s}
+.cap:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.cap.wide{grid-column:1/-1}
+.cap-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(138,29,95,.12),rgba(212,82,159,.14));display:grid;place-items:center;color:var(--violet);flex:none}
+.cap-icon svg{width:17px;height:17px}
+.cap h4{font-size:.92rem;font-weight:700;margin-bottom:3px}
+.cap p{font-size:.8rem;color:var(--slate);line-height:1.45}
+
+/* ------- why ------- */
+.why-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:48px;align-items:start}
+@media(max-width:980px){.why-grid{grid-template-columns:1fr;gap:36px}}
+.benefit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.benefit-grid{grid-template-columns:1fr}}
+.benefit{background:#fdf1f7;border:1px solid var(--line);border-radius:var(--radius);padding:14px 15px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow-sm);transition:transform .2s,box-shadow .2s}
+.benefit:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.b-icon{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#fff;flex:none}
+.b-icon svg{width:15px;height:15px}
+.benefit h4{font-size:.9rem;font-weight:700;margin-bottom:2px}
+.benefit p{font-size:.78rem;color:var(--slate);line-height:1.45}
+
+/* ------- footer ------- */
+footer{background:var(--navy);color:#e8cadb;padding:26px 0;font-size:.85rem}
+.foot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.foot .brand{color:#fff}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ APP TOP BAR ============ -->
+<div class="topbar">
+  <div class="topbar-left">
+    <img class="app-logo" src="plum-logo.png" alt="Plum">
+    <div class="tb-item" id="tbApps">
+      <button class="tb-btn" type="button" onclick="tbToggle('tbApps',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg>
+        <span class="tb-label">My Apps</span>
+        <svg class="tb-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="tb-menu tb-left">
+        <a href="#"><span class="app-ic" style="background:#f97316"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a3 3 0 0 1 3-3h6a3 3 0 0 1 0 6h-2"/><path d="M15 12a3 3 0 0 1-3 3H6a3 3 0 0 1 0-6h2"/></svg></span>Any Connector</a>
+        <a href="#"><span class="app-ic" style="background:#22c55e"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="M8.7 10.7l6.6-3.4M8.7 13.3l6.6 3.4"/></svg></span>My Connection</a>
+        <a href="#"><span class="app-ic" style="background:#0ea5e9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 6-7 3 3"/></svg></span>Zip Forecasting</a>
+        <a href="#"><span class="app-ic" style="background:#8b5cf6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>Zip Inventory</a>
+        <a href="#"><span class="app-ic" style="background:#d946ef"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.6 12h11.2l2-8H6.2"/></svg></span>Zip Ordering</a>
+        <a href="#"><span class="app-ic" style="background:#3b82f6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 21h8M12 16v5"/></svg></span>Zip POS DashBoard</a>
+        <a href="#"><span class="app-ic" style="background:#2563eb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V10M10 19V5M16 19v-7M21 19H3"/></svg></span>Zip Reports</a>
+        <a href="#"><span class="app-ic" style="background:#64748b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h0a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h0a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v0a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg></span>Settings</a>
+        <a href="#"><span class="app-ic" style="background:#0284c7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l1.5 4a3 3 0 0 1-3 3.5A3 3 0 0 1 13.5 12 3 3 0 0 1 10.5 14.5 3 3 0 0 1 7.5 12a3 3 0 0 1-3 2.5A3 3 0 0 1 3 11z"/><path d="M5 14v6h14v-6"/></svg></span>App Store</a>
+      </div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="tb-item" id="tbCorp">
+      <button class="tb-btn tb-pill" type="button" onclick="tbToggle('tbCorp',event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="12" height="18" rx="1.5"/><path d="M16 9h4v12h-4"/><path d="M8 7h1.5M8 11h1.5M8 15h1.5M11.5 7H13M11.5 11H13M11.5 15H13M9 21v-3h2v3"/></svg>
+        <span class="tb-label">Corporate</span>
+        <svg class="tb-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="tb-menu tb-right" style="min-width:310px">
+        <div class="tb-search">
+          <select><option>Franchise</option></select>
+          <input type="text" placeholder="Search by Franchise Name">
+        </div>
+        <a href="#"><span class="app-ic" style="background:#e8f1fd;color:#2563eb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="12" height="18" rx="1.5"/><path d="M16 9h4v12h-4"/><path d="M8 7h1.5M8 11h1.5M8 15h1.5M11.5 7H13M11.5 11H13M11.5 15H13M9 21v-3h2v3"/></svg></span>Corporate</a>
+        <a href="#"><span class="app-ic" style="background:#e8f1fd;color:#2563eb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="12" height="18" rx="1.5"/><path d="M16 9h4v12h-4"/><path d="M8 7h1.5M8 11h1.5M8 15h1.5M11.5 7H13M11.5 11H13M11.5 15H13M9 21v-3h2v3"/></svg></span>Altitude Soda LLC</a>
+        <a href="#"><span class="app-ic" style="background:#e8f1fd;color:#2563eb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="12" height="18" rx="1.5"/><path d="M16 9h4v12h-4"/><path d="M8 7h1.5M8 11h1.5M8 15h1.5M11.5 7H13M11.5 11H13M11.5 15H13M9 21v-3h2v3"/></svg></span>Black Mountain Soda LLC</a>
+        <a href="#"><span class="app-ic" style="background:#e8f1fd;color:#2563eb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="12" height="18" rx="1.5"/><path d="M16 9h4v12h-4"/><path d="M8 7h1.5M8 11h1.5M8 15h1.5M11.5 7H13M11.5 11H13M11.5 15H13M9 21v-3h2v3"/></svg></span>Bubbles Group LLC</a>
+      </div>
+    </div>
+    <button class="tb-icon-btn" type="button" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h0a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h0a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v0a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+    </button>
+    <span class="tb-avatar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c.8-4 4-6 8-6s7.2 2 8 6"/></svg>
+      <span class="tb-badge">1</span>
+    </span>
+  </div>
+</div>
+
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><img src="plum-ai-dash.svg" alt="AI Dashboard logo"></span>
+      AI&nbsp;Dashboard
+    </a>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#why">Why AI Dashboard</a>
+      <a href="#top" class="btn btn-primary" style="padding:10px 20px;font-size:.85rem;color:#fff">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 5.6L20 9.5l-5 4 1.6 6.2L12 16.4 7.4 19.7 9 13.5l-5-4 6.1-1.9z"/></svg>
+        Enterprise AI Analytics Platform
+      </span>
+      <h1>AI <span class="grad-text">Dashboard</span></h1>
+      <p class="hero-sub">Transform operational data into intelligent business decisions using AI-powered dashboards, predictive analytics, and actionable recommendations.</p>
+      <div class="hero-chips">
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V10M10 19V5M16 19v-7M21 19H3"/></svg>Organization Performance</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 12.6a9 9 0 1 1-9.4-9.4"/><path d="M9 12l2 2 4-4"/></svg>Store Health Score</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 1 4 4c0 1.5-.8 2.4-.8 3.6h-6.4C8.8 9.4 8 8.5 8 7a4 4 0 0 1 4-4z"/><path d="M9.5 14h5M10 17.5h4M11 21h2"/></svg>AI Insights</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17.5v.5"/></svg>Risk Monitoring</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 3h3v15H5V6h3z"/><path d="M9 13l2 2 4-4"/></svg>Compliance Tracking</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>Time Loss Analytics</span>
+      </div>
+    </div>
+
+    <!-- Org Dashboard preview -->
+    <div class="dash-frame">
+      <div class="dash-head">
+        <div class="dash-dots"><i></i><i></i><i></i></div>
+        <span class="dash-title">Org Dashboard</span>
+        <span class="sample-tag">Sample Data</span>
+      </div>
+      <img class="dash-img" src="org-dashboard.png" alt="Org Dashboard — organization-wide KPIs, store performance, labor, payroll, inventory, and AI insights">
+    </div>
+  </div>
+</header>
+
+<!-- ============ ABOUT ============ -->
+<section class="about" id="about">
+  <div class="container about-grid">
+    <div class="section-head">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg>
+        About the Platform
+      </span>
+      <h2>One intelligent platform for every <span class="grad-text">operational signal</span></h2>
+      <p>AI Dashboard consolidates operational data from multiple restaurant modules — Labor, Inventory, Sales, Payroll, Cash Control, and Compliance — into one intelligent platform. Instead of switching between reports, operators get a unified, AI-verified view of store and organization performance with clear, prioritized actions.</p>
+      <div class="about-stats">
+        <div class="stat"><b>6</b><span>Integrated dashboards</span></div>
+        <div class="stat"><b>60+</b><span>Operational KPIs</span></div>
+      </div>
+    </div>
+    <div class="cap-grid">
+      <div class="cap">
+        <span class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 12.6a9 9 0 1 1-9.4-9.4"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <div><h4>AI Verified Store Score</h4><p>A single health index validated by AI across labor, inventory, sales, payroll, and cash.</p></div>
+      </div>
+      <div class="cap">
+        <span class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+        <div><h4>Organization Rollup</h4><p>Franchise-wide performance aggregated across every store in real time.</p></div>
+      </div>
+      <div class="cap">
+        <span class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V10M10 19V5M16 19v-7M21 19H3"/></svg></span>
+        <div><h4>Store Level KPIs</h4><p>Labor %, food cost, SPLH, sales, OT, and cash control at store granularity.</p></div>
+      </div>
+      <div class="cap">
+        <span class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 6-7 3 3"/><path d="M21 8V5h-3"/></svg></span>
+        <div><h4>Historical Trends</h4><p>Week, month, quarter, and year comparisons for every metric.</p></div>
+      </div>
+      <div class="cap">
+        <span class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+        <div><h4>Predictive Recommendations</h4><p>Forecast-driven actions that address issues before they impact P&amp;L.</p></div>
+      </div>
+      <div class="cap">
+        <span class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+        <div><h4>Root Cause Analysis</h4><p>Drill from a KPI change to the department, shift, or employee driving it.</p></div>
+      </div>
+      <div class="cap wide">
+        <span class="cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 1 4 4c0 1.5-.8 2.4-.8 3.6h-6.4C8.8 9.4 8 8.5 8 7a4 4 0 0 1 4-4z"/><path d="M9.5 14h5M10 17.5h4M11 21h2"/></svg></span>
+        <div><h4>AI Generated Insights</h4><p>Every dashboard produces daily and weekly narratives, alerts, and recommended actions — written automatically from live operational data.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY AI DASHBOARD ============ -->
+<section id="why">
+  <div class="container why-grid">
+    <div class="section-head">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.9 5.6L20 9.5l-5 4 1.6 6.2L12 16.4 7.4 19.7 9 13.5l-5-4 6.1-1.9z"/></svg>
+        Why AI Dashboard
+      </span>
+      <h2>From raw operational data to <span class="grad-text">confident decisions</span></h2>
+      <p>Multi-unit operators lose margin in the gaps between systems. AI Dashboard closes those gaps — one platform, one score, and a clear list of what to do next.</p>
+    </div>
+    <div class="benefit-grid">
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/></svg></span>
+        <div><h4>Single Platform</h4><p>Labor, inventory, sales, payroll, cash, and compliance in one place.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8-6-16-3 8H2"/></svg></span>
+        <div><h4>Real Time Monitoring</h4><p>Live operational sync across every store, all day.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 1 4 4c0 1.5-.8 2.4-.8 3.6h-6.4C8.8 9.4 8 8.5 8 7a4 4 0 0 1 4-4z"/><path d="M9.5 14h5M10 17.5h4M11 21h2"/></svg></span>
+        <div><h4>AI Driven Decisions</h4><p>Recommendations ranked by impact, savings, and confidence.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2 2.7 5 3.3 5 1.5 5 3.4-2.2 3.3-5 3.3-5-1.4-5-3.3"/></svg></span>
+        <div><h4>Reduced Operational Cost</h4><p>Target labor, OT, and waste where the dollars actually leak.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6l1 3h3v15H5V6h3z"/><path d="M9 13l2 2 4-4"/></svg></span>
+        <div><h4>Better Compliance</h4><p>Break, minor, and fair work week adherence tracked automatically.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.4 8.3-8 9-4.6-.7-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <div><h4>Lower Risk</h4><p>AI risk scoring flags stores before problems become losses.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><path d="M16 4.5a3.2 3.2 0 0 1 0 7"/><path d="M17.5 15c1.8.5 3 2.2 3.3 5"/></svg></span>
+        <div><h4>Improved Labor Productivity</h4><p>SPLH and schedule efficiency optimized per daypart.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>
+        <div><h4>Inventory Optimization</h4><p>Variance, waste, and stockout alerts keep food cost in line.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></span>
+        <div><h4>Executive Visibility</h4><p>AI summaries turn your entire organization into a two-minute read.</p></div>
+      </div>
+      <div class="benefit">
+        <span class="b-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V10M10 19V5M16 19v-7M21 19H3"/><path d="M21 5l-4 0 0 4"/></svg></span>
+        <div><h4>Organization Benchmarking</h4><p>Every store measured against org averages and industry targets.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container foot">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><img src="plum-ai-dash.svg" alt="AI Dashboard logo"></span>
+      AI&nbsp;Dashboard
+    </a>
+    <span>© 2026 AI Dashboard · Restaurant &amp; QSR Management Platform · All data shown is sample data</span>
+  </div>
+</footer>
+
+<script>
+function tbToggle(id, e) {
+  e.stopPropagation();
+  var el = document.getElementById(id);
+  var wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.tb-item.open').forEach(function (i) { i.classList.remove('open'); });
+  if (!wasOpen) el.classList.add('open');
+}
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.tb-item')) {
+    document.querySelectorAll('.tb-item.open').forEach(function (i) { i.classList.remove('open'); });
+  }
+});
+</script>
+</body>
+</html>
